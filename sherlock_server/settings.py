@@ -42,7 +42,7 @@ INSTALLED_APPS = [
 ]
 
 CRONJOBS = [
-    ('*/1 * * * *', 'SherlockServer.cron.cron_job', '>> ~/cronjob.log'),
+    ('*/1 * * * *', 'SherlockServer.cron.extractFeatures', '>> ./cronjob.log'),
 ]
 
 MIDDLEWARE = [
