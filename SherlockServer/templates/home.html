@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}
+<title> Sherlock: Home </title>
+{% endblock %}
+
+{% block bodyContent %}
+<h1>Sherlock</h1>
+<h2>Upload File</h2>
+<form action="{% url 'upload' %}" method='post' enctype='multipart/form-data'>
+	<input type="file" name="file">
+	<input type="submit" name="upload">
+	{% csrf_token %}
+</form>
+{% endblock %}
