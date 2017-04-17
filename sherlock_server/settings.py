@@ -41,8 +41,32 @@ INSTALLED_APPS = [
     'django_crontab'
 ]
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(PROJECT_ROOT,'debug.log'),
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'django-crontab.crontab': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
+
 CRONJOBS = [
-    ('*/1 * * * *', 'SherlockServer.cron.extractFeatures', '>> ./cronjob.log'),
+    ('*/1 * * * *', 'SherlockServer.cron.extractFeatures', '>> ~/cronjob.log'),
 ]
 
 MIDDLEWARE = [
