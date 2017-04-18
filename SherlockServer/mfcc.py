@@ -112,7 +112,7 @@ class MFCC(object):
         mfcc = numpy.zeros((nfr, self.nfilt), 'd')
         fr = 0
         while fr < nfr:
-            start = round(fr * self.fshift)
+            start = int(fr * self.fshift)
             end = min(len(sig), start + self.wlen)
             frame = sig[start:end]
             if len(frame) < self.wlen:

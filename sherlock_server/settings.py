@@ -25,7 +25,9 @@ SECRET_KEY = 'kmiy_urf$944b#3b2fm&c4t@w1lpd=iujycw+t110(%(z1tuj^'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['10.27.9.25']
+ALLOWED_HOSTS = ['10.27.9.25',
+                 '0.0.0.0',
+                 '127.0.0.1']
 
 
 # Application definition
@@ -57,7 +59,12 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
-        'django-crontab.crontab': {
+        'django_crontab.crontab': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        '': {
             'handlers': ['file'],
             'level': 'DEBUG',
             'propagate': True,
@@ -67,6 +74,7 @@ LOGGING = {
 
 CRONJOBS = [
     ('*/1 * * * *', 'SherlockServer.cron.extractFeatures', '>> ~/cronjob.log'),
+    ('*/1 * * * *', 'SherlockServer.cron.classify', '>> ~/cronjob.log'),
 ]
 
 MIDDLEWARE = [
@@ -154,3 +162,6 @@ MEDIA_ROOT = os.path.join(PROJECT_ROOT,'media/')
 if not os.path.exists(MEDIA_ROOT):
     os.mkdir(MEDIA_ROOT)
 STATIC_URL = '/static/'
+FEAT_ROOT = os.path.join(PROJECT_ROOT,'features/')
+if not os.path.exists(FEAT_ROOT):
+    os.mkdir(FEAT_ROOT)

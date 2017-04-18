@@ -5,6 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.files import File
 from SherlockServer.models import *
 import json
+from mimetypes import guess_type
 # Create your views here.
 
 def home(request):
@@ -25,8 +26,9 @@ def receiveSample(request):
 					loc.save()
 				else:
 					loc = loc[0]
+				dtype = guess_type(f.name)[0].split('/')[0]	
 				ds = DataSample(location=loc,
-							dataType=desc['type'],
+							dataType=dtype,
 							dataFile=File(f))
 				ds.save()
 
