@@ -6,6 +6,7 @@ from django.core.files import File
 from SherlockServer.models import *
 import json
 from mimetypes import guess_type
+from django.http import HttpResponse
 # Create your views here.
 
 def home(request):
@@ -20,6 +21,7 @@ def receiveSample(request):
 			fs = FileSystemStorage()
 			for fname in files:
 				f = files[fname]
+				print f.name
 				loc = Location.objects.filter(name=desc['location'])
 				if len(loc) == 0:
 					loc = Location(name=desc['location'])
@@ -33,3 +35,9 @@ def receiveSample(request):
 				ds.save()
 
 	return render(request,'home.html')
+
+def sendUpdatedParams(request,loc):
+	params = {"AUDIO_SAMPLING_RATE" : 30000,
+				"IMAGE_SAMPLING_RATE" : 100000}
+	responseText = json.dumps(params)
+	return HttpResponse(responseText, content_type="application/json")

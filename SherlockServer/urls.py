@@ -21,4 +21,5 @@ from . import views
 urlpatterns = [
     url(r'^$', views.home),
     url(r'^uploadSample$', views.receiveSample, name='upload'),
+     url(r'^getUpdate/(?P<loc>\S+)', views.sendUpdatedParams, name='update'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

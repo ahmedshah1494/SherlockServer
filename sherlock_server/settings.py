@@ -75,6 +75,7 @@ LOGGING = {
 CRONJOBS = [
     ('*/1 * * * *', 'SherlockServer.cron.extractFeatures', '>> ~/cronjob.log'),
     ('*/1 * * * *', 'SherlockServer.cron.classify', '>> ~/cronjob.log'),
+    ('*/1 * * * *', 'SherlockServer.cron.updateConfidence', '>> ~/cronjob.log'),
 ]
 
 MIDDLEWARE = [
@@ -165,3 +166,12 @@ STATIC_URL = '/static/'
 FEAT_ROOT = os.path.join(PROJECT_ROOT,'features/')
 if not os.path.exists(FEAT_ROOT):
     os.mkdir(FEAT_ROOT)
+GMM_ROOT = os.path.join(PROJECT_ROOT, 'DataModels/GMMs/')
+if not os.path.exists(GMM_ROOT):
+    os.mkdir(GMM_ROOT)
+VOCAB_ROOT = os.path.join(PROJECT_ROOT, 'DataModels/Vocab/')
+if not os.path.exists(VOCAB_ROOT):
+    os.mkdir(VOCAB_ROOT)
+IMAGE_SVM_ROOT = os.path.join(PROJECT_ROOT, 'DataModels/ImageSVMs/')
+if not os.path.exists(IMAGE_SVM_ROOT):
+    os.mkdir(IMAGE_SVM_ROOT)

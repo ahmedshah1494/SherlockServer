@@ -33,7 +33,7 @@ def testFiles(files, ncomps ,gmmFileDir):
 		data_f = np.array(filter(lambda x: not np.isnan(np.sum(x)), data))
 
 		if data.shape[0] < 80:
-		    continue
+		    results.append(None)
 		if len(data_f.shape) != 2:
 			data_f = np.zeros((80,40))
 		ll_P = sum(gmm_P.score(data_f))

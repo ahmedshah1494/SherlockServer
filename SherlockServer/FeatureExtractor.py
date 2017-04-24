@@ -1,10 +1,11 @@
 from django.core.files.storage import FileSystemStorage
-from SherlockServer.models import *
 from mfcc import *
 import scipy.io.wavfile as wav
 import numpy as np
 from django.conf import settings
 import GMMTest as gmm
+from clarifai.rest import ClarifaiApp
+from clarifai.rest import Image as ClImage
 import os
 
 def makeDiffCoefficients(filename):
@@ -37,10 +38,52 @@ def extractAudioFeatures(filename):
 	diff_path = makeDiffCoefficients(mfcc_path)
 	return [mfcc_path, diff_path, stft_path]
 
-def classifyAudio(files):
-	gmmDir = os.path.join(settings.PROJECT_ROOT, 'DataModels/GMMs/CMU_NUQ_handsOnly/')
-	res = {}
-	mfcc_files = filter(lambda x: x.split('.')[-len(mfcc_ext):] == mfcc_ext, files)
-	for d in dirs:
-		res[d] = gmm.testFiles(mfcc_files, 64, os.path.join(gmmDir,d+'/fold_0'))
-	return res
+def getConcepts(json):	
+	concepts = []
+	resp = json['outputs']
+	resp = map(lambda x: x['data'], resp)
+	resp = map(lambda x: x['concepts'], resp)
+	# resp = map(lambda x: map(lambda y: (y['name'],y['value']), x), resp)
+	for r in resp:
+		d = {}
+		# map(lambda y: d[y['name']] = y['value'], r)
+		for y in r:
+			d[y['name']] = y['value']
+		concepts.append(d)
+	return concepts
+
+def extractImageFeatures(imgs_files):
+	classes = ['BH','BR','O','P','SH']
+	fs = FileSystemStorage(location=settings.FEAT_ROOT)
+	app = ClarifaiApp('jiBNMPUJ4QR7GT-VRDL6ZdrvfgbYRzK6jX7DQKXp','jlwJ1AKBNSN1B8205X_3oqaZLYrxOa2kL3DUKX77')
+	app.auth.get_token()
+	batch = 90
+	sent_count = 0
+	model = app.models.get('general-v1.3')
+	concepts = []
+	while sent_count < len(imgs_files):
+		imgs = map(lambda x: ClImage(file_obj=open(x, 'rb'), image_id=x), 
+						imgs_files[sent_count:min(len(imgs_files), sent_count + batch)])
+		resp = model.predict(imgs)
+		sent_count += min(len(imgs), sent_count + batch)
+		filenames = map(lambda x: x['input']['id'], resp['outputs'])
+		concepts += getConcepts(resp)
+
+	file_paths = []
+	vocabs = os.listdir(settings.VOCAB_ROOT)
+	vocabs = map(lambda x: os.path.join(settings.VOCAB_ROOT,x),vocabs)
+	for j in range(len(vocabs)):
+		vocab = vocabs[j]
+		with open(vocab, 'r') as f:
+			vocab = f.readlines()
+
+		for i in range(len(concepts)):
+			fv = np.array([map(lambda x: concepts[i].get(x[:-1],0.0), vocab)])
+			f_path = fs.path(imgs_files[i].split('/')[-1])+"_%s.feat"%classes[j]
+			file_paths.append(f_path)
+			np.savetxt(f_path, fv, fmt='%s')
+
+	return file_paths
+
+
+
